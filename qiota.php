@@ -28,6 +28,8 @@ define('QIOTA__PLUGIN_DIR', plugin_dir_path( __FILE__ ));
 register_activation_hook(__FILE__, array( 'Qiota', 'plugin_activation'));
 register_deactivation_hook(__FILE__, array( 'Qiota', 'plugin_deactivation'));
 
+require_once( QIOTA__PLUGIN_DIR . 'class.qiota.php' );
+
 if (is_admin() || (defined( 'WP_CLI' ) && WP_CLI )) {
 	require_once(QIOTA__PLUGIN_DIR . 'class.qiota-admin.php');
 	add_action('init', array( 'QiotaAdmin', 'init' ));

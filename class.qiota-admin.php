@@ -14,9 +14,10 @@ class QiotaAdmin
 
     public static function init_hooks() 
     {
+        self::$initiated = true;
         add_action('admin_init', array('QiotaAdmin', 'admin_init'));
         add_action('admin_menu', array('QiotaAdmin', 'admin_menu'));
-        self::$initiated = true;
+        add_filter( 'plugin_action_links_'.plugin_basename( plugin_dir_path( __FILE__ ) . 'qiota.php'), array( 'QiotaAdmin', 'admin_plugin_settings_link' ));
     }
 
     public static function admin_init() 
@@ -41,7 +42,43 @@ class QiotaAdmin
 
     public static function admin_menu()
     {
-        $hook = add_options_page( __( 'Qiota', 'qiota' ), __( 'Qiota', 'qiota' ), 'manage_options', 'qiota-key-config', array( 'Qiota_Admin', 'display_page' ) );
-        add_action( "load-$hook", array( 'Qiota_Admin', 'admin_help' ) );
+        $hook = add_options_page( __( 'Qiota', 'qiota' ), __( 'Qiota', 'qiota' ), 'manage_options', 'qiota-key-config', array( 'QiotaAdmin', 'display_page' ) );
+        add_action( "load-$hook", array( 'QiotaAdmin', 'admin_help' ) );
+    }
+
+    public static function admin_plugin_settings_link($links) 
+    {
+        $settings_link = '<a href="'.esc_url( self::get_page_url() ).'">'.__('Settings', 'qiota').'</a>';
+        array_unshift( $links, $settings_link );
+        return $links;
+    }
+
+	public static function get_page_url($page = 'config')
+    {
+		$args = ['page' => 'qiota-key-config'];
+		if ($page == 'stats') {
+			$args = ['page' => 'qiota-key-config', 'view' => 'stats'];
+		} elseif ($page == 'delete_key') {
+			$args = ['page' => 'qiota-key-config', 'view' => 'start', 'action' => 'delete-key', '_wpnonce' => wp_create_nonce(self::NONCE)];
+		} elseif ($page === 'init') {
+			$args = ['page' => 'qiota-key-config', 'view' => 'start'];
+		}
+
+		return add_query_arg( $args, menu_page_url( 'qiota-key-config', false ) );
+	}
+
+	public static function display_page() 
+    {
+		self::display_configuration_page();
+	}
+
+	public static function display_configuration_page()
+    {
+        Qiota::view('setup');
+	}
+
+    public static function admin_help()
+    {
+        // @todo : add help for settings about qiota
     }
 }
