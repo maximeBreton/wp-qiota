@@ -3,13 +3,18 @@
 class QiotaAdmin
 {
 
+    const NONCE = 'qiota-update-config';
     private static $initiated = false;
 
     public static function init() 
     {
-		if (!self::$initiated) {
-			self::init_hooks();
-		}
+        if (!self::$initiated) {
+            self::init_hooks();
+        }
+
+        if (isset($_POST['action']) && $_POST['action'] == 'qiota-update-config') {
+            self::update_config();
+        }
     }
 
     public static function init_hooks() 
@@ -53,32 +58,36 @@ class QiotaAdmin
         return $links;
     }
 
-	public static function get_page_url($page = 'config')
+    public static function get_page_url($page = 'config')
     {
-		$args = ['page' => 'qiota-key-config'];
-		if ($page == 'stats') {
-			$args = ['page' => 'qiota-key-config', 'view' => 'stats'];
-		} elseif ($page == 'delete_key') {
-			$args = ['page' => 'qiota-key-config', 'view' => 'start', 'action' => 'delete-key', '_wpnonce' => wp_create_nonce(self::NONCE)];
-		} elseif ($page === 'init') {
-			$args = ['page' => 'qiota-key-config', 'view' => 'start'];
-		}
+        $args = ['page' => 'qiota-key-config', '_wpnonce' => wp_create_nonce( self::NONCE )];
+        return add_query_arg($args, menu_page_url('qiota-key-config', false));
+    }
 
-		return add_query_arg( $args, menu_page_url( 'qiota-key-config', false ) );
-	}
-
-	public static function display_page() 
+    public static function display_page() 
     {
-		self::display_configuration_page();
-	}
+        self::display_configuration_page();
+    }
 
-	public static function display_configuration_page()
+    public static function display_configuration_page()
     {
         Qiota::view('setup');
-	}
+    }
 
     public static function admin_help()
     {
         // @todo : add help for settings about qiota
+    }
+
+    public static function update_config()
+    {
+        $options = ['qiotatoken', 'qiotamode'];
+        foreach($options as $option) {
+            if (isset($option) && !empty($option)) {
+                update_option($option, $_POST[$option]);
+                continue;
+            }
+            delete_option($option);
+        }
     }
 }

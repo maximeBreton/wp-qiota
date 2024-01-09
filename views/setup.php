@@ -1,6 +1,6 @@
 <div class="wrap">
     <h1>Configuration de Qiota</h1>
-    <form method="post" action="qiota_settings" novalidate="novalidate">
+    <form method="post" action="<?php echo esc_url(QiotaAdmin::get_page_url()); ?>" novalidate="novalidate">
         <table class="form-table" role="presentation">
             <tbody>
                 <tr>
@@ -8,7 +8,7 @@
                         <label for="qiotatoken"><?php echo __('Token', 'qiota') ?></label>
                     </th>
                     <td>
-                        <input name="qiotatoken" type="text" id="qiotatoken" value="" class="regular-text" />
+                        <input name="qiotatoken" type="text" id="qiotatoken" value="<?php echo esc_attr( get_option('qiotatoken') ); ?>" class="regular-text" />
                     </td>
                 </tr>
             </tbody>
@@ -32,6 +32,7 @@
             </tr>
         </table>
         <p class="submit">
+            <input type="hidden" name="action" value="qiota-update-config">
             <input type="submit" name="submit" id="submit" class="button button-primary" value="<?php echo __('Save changes', 'qiota') ?>">
         </p>
     </form>
