@@ -28,9 +28,14 @@ define('QIOTA__PLUGIN_DIR', plugin_dir_path( __FILE__ ));
 register_activation_hook(__FILE__, array( 'Qiota', 'plugin_activation'));
 register_deactivation_hook(__FILE__, array( 'Qiota', 'plugin_deactivation'));
 
-require_once( QIOTA__PLUGIN_DIR . 'class.qiota.php' );
+require_once(QIOTA__PLUGIN_DIR . 'class.qiota.php');
 
 if (is_admin() || (defined( 'WP_CLI' ) && WP_CLI )) {
 	require_once(QIOTA__PLUGIN_DIR . 'class.qiota-admin.php');
-	add_action('init', array( 'QiotaAdmin', 'init' ));
+	add_action('init', array('QiotaAdmin', 'init'));
+}
+
+if (null !== get_option('qiotatoken') && !empty(get_option('qiotatoken')) && null !== get_option('qiotamode') && !empty(get_option('qiotamode'))) {
+	require_once(QIOTA__PLUGIN_DIR . 'class.qiota-front.php');
+	add_action('init', array('QiotaFront', 'init'));
 }

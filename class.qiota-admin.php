@@ -1,9 +1,11 @@
 <?php
 
+/**
+ * @todo: See how to handling nonce on the admin settings page
+ */
+
 class QiotaAdmin
 {
-
-    const NONCE = 'qiota-update-config';
     private static $initiated = false;
 
     public static function init() 
@@ -60,7 +62,7 @@ class QiotaAdmin
 
     public static function get_page_url($page = 'config')
     {
-        $args = ['page' => 'qiota-key-config', '_wpnonce' => wp_create_nonce( self::NONCE )];
+        $args = ['page' => 'qiota-key-config'];
         return add_query_arg($args, menu_page_url('qiota-key-config', false));
     }
 
